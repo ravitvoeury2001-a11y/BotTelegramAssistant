@@ -50,8 +50,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         )
     elif update.callback_query:
         await update.callback_query.answer()
-        await update.callback_query.edit_message_text(
-            welcome_text,
-            reply_markup=reply_markup,
-            parse_mode="Markdown",
-        )
+        try:
+            await update.callback_query.edit_message_text(
+                welcome_text,
+                reply_markup=reply_markup,
+                parse_mode="Markdown",
+            )
+        except Exception as e:
+            if "Message is not modified" not in str(e):
+                logger.warning("Failed to edit message in start: %s", e)

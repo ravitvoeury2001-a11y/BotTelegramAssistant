@@ -41,6 +41,10 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
     Logs error details internally without exposing sensitive details, API keys,
     or internal tracebacks to the end-user.
     """
+    # Ignore benign Telegram error when an inline button is pressed but text did not change
+    if context.error and "Message is not modified" in str(context.error):
+        return
+
     logger.error("Exception while handling an update:", exc_info=context.error)
 
     # Inform the user politely if this error happened inside an active conversation
