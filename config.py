@@ -22,14 +22,55 @@ class Config:
         default_factory=lambda: os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     )
 
-    # OpenAI API Key (optional - smart offline mode enabled if omitted)
-    openai_api_key: Optional[str] = field(
-        default_factory=lambda: os.getenv("OPENAI_API_KEY", "").strip() or None
+    # Telegram Bot Username (optional)
+    telegram_bot_username: str = field(
+        default_factory=lambda: os.getenv("TELEGRAM_BOT_USERNAME", "").strip()
     )
 
-    # OpenAI Model
+    # Telegram Running Mode (polling or webhook)
+    telegram_mode: str = field(
+        default_factory=lambda: os.getenv("TELEGRAM_MODE", "polling").strip()
+    )
+
+    # AI API Key (supports AI_API_KEY and OPENAI_API_KEY)
+    openai_api_key: Optional[str] = field(
+        default_factory=lambda: (
+            os.getenv("AI_API_KEY", "").strip()
+            or os.getenv("OPENAI_API_KEY", "").strip()
+            or None
+        )
+    )
+
+    # AI Model (supports AI_MODEL and OPENAI_MODEL)
     openai_model: str = field(
-        default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
+        default_factory=lambda: (
+            os.getenv("AI_MODEL", "").strip()
+            or os.getenv("OPENAI_MODEL", "gpt-4o-mini").strip()
+        )
+    )
+
+    # Admin Panel Credentials
+    admin_username: str = field(
+        default_factory=lambda: os.getenv("ADMIN_USERNAME", "admin").strip()
+    )
+    admin_password: str = field(
+        default_factory=lambda: os.getenv("ADMIN_PASSWORD", "admin123456").strip()
+    )
+
+    # Database URL & Credentials (PostgreSQL / SQLite)
+    database_url: Optional[str] = field(
+        default_factory=lambda: os.getenv("DATABASE_URL", "").strip() or None
+    )
+    database_username: Optional[str] = field(
+        default_factory=lambda: os.getenv("DATABASE_USERNAME", "").strip() or None
+    )
+    database_password: Optional[str] = field(
+        default_factory=lambda: os.getenv("DATABASE_PASSWORD", "").strip() or None
+    )
+
+    # Redis URL (Optional)
+    redis_url: Optional[str] = field(
+        default_factory=lambda: os.getenv("REDIS_URL", "").strip() or None
     )
 
     # Administrator Telegram User IDs
