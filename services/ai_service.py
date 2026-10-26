@@ -71,8 +71,22 @@ class AIService:
             try:
                 return await self._call_openai(prompt, conversation_history, language)
             except Exception as e:
-                logger.error("OpenAI API call failed, falling back to offline assistant: %s", e)
-                # Fall back to offline assistant seamlessly on error
+                err_str = str(e).lower()
+                logger.error("AI API call failed: %s", e)
+                if "insufficient_balance" in err_str or "402" in err_str:
+                    if language == "km":
+                        return (
+                            "⚠️ **គណនី DeepSeek របស់អ្នកអស់លុយ/សមតុល្យ (Insufficient Balance)**\n\n"
+                            "API Key របស់បងគឺ**ត្រឹមត្រូវ ១០០% ហើយ**! ប៉ុន្តែគណនី DeepSeek ត្រូវការបញ្ចូលទឹកប្រាក់ (Top up balance) "
+                            "នៅលើ [platform.deepseek.com/top_up](https://platform.deepseek.com/top_up) ដើម្បីអាចទាញយកចម្លើយបាន។\n\n"
+                            "💡 *នៅពេលបងបញ្ចូលលុយរួច វានឹងដំណើរការឆ្លើយតប AI ភ្លាម!*"
+                        )
+                    return (
+                        "⚠️ **DeepSeek API: Insufficient Balance (Error 402)**\n\n"
+                        "Your DeepSeek API Key is **100% valid**, but your account balance is $0.00. "
+                        "Please add credit at [platform.deepseek.com/top_up](https://platform.deepseek.com/top_up) "
+                        "to enable live AI answers."
+                    )
                 return self._generate_offline_response(prompt, language, is_fallback=True)
 
         return self._generate_offline_response(prompt, language, is_fallback=False)

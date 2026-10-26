@@ -8,6 +8,8 @@ def test_config_defaults(monkeypatch):
     """Test default values when environment variables are not set."""
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("AI_API_KEY", raising=False)
+    monkeypatch.delenv("AI_MODEL", raising=False)
     monkeypatch.delenv("ADMIN_IDS", raising=False)
 
     cfg = Config()
