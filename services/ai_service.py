@@ -19,23 +19,35 @@ class AIService:
         if self.api_key:
             try:
                 from openai import AsyncOpenAI
-                self._client = AsyncOpenAI(api_key=self.api_key)
-                logger.info("OpenAI client initialized with model: %s", self.model)
+
+                base_url = config.ai_base_url
+                if not base_url and "deepseek" in self.model.lower():
+                    base_url = "https://api.deepseek.com"
+
+                client_kwargs = {"api_key": self.api_key}
+                if base_url:
+                    client_kwargs["base_url"] = base_url
+
+                self._client = AsyncOpenAI(**client_kwargs)
+                backend_name = "DeepSeek" if (base_url and "deepseek" in base_url) else "OpenAI"
+                logger.info("%s client initialized with model: %s (base_url: %s)", backend_name, self.model, base_url or "default")
             except Exception as e:
-                logger.warning("Failed to initialize OpenAI client: %s", e)
+                logger.warning("Failed to initialize AI client: %s", e)
                 self._client = None
         else:
-            logger.info("OpenAI API key not configured. Smart offline assistant enabled.")
+            logger.info("AI API key not configured. Smart offline assistant enabled.")
 
     @property
     def is_online(self) -> bool:
-        """Check whether OpenAI client is configured and available."""
+        """Check whether AI client is configured and available."""
         return self._client is not None
 
     def get_status_description(self) -> str:
         """Return human-readable status of AI backend."""
         if self.is_online:
-            return f"OpenAI Online ({self.model})"
+            base_url = config.ai_base_url or ""
+            provider = "DeepSeek" if ("deepseek" in base_url or "deepseek" in self.model.lower()) else "OpenAI"
+            return f"{provider} Online ({self.model})"
         return "Smart Offline Assistant (Built-in)"
 
     async def generate_response(

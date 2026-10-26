@@ -49,6 +49,15 @@ class Config:
         )
     )
 
+    # AI Base URL (optional - e.g. https://api.deepseek.com for DeepSeek)
+    ai_base_url: Optional[str] = field(
+        default_factory=lambda: (
+            os.getenv("AI_BASE_URL", "").strip()
+            or os.getenv("OPENAI_BASE_URL", "").strip()
+            or None
+        )
+    )
+
     # Admin Panel Credentials
     admin_username: str = field(
         default_factory=lambda: os.getenv("ADMIN_USERNAME", "admin").strip()
